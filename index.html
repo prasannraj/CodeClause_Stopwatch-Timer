@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>stopwatch & Timer</title>
+    <style>
+        body {
+            background-color: #1d3a58;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        #container {
+            color: #f6f8fa;
+        }
+        
+        .digit {
+            font-size: 100px;
+            font-weight: bold;
+        }
+        
+        .txt {
+            font-size: 40px;
+            font-weight: bold;
+        }
+        
+        #btn-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .btn {
+            padding: 7px 25px;
+            font-size: 15px;
+            margin: 0px 10px;
+            color: black;
+            border: 0px;
+            cursor: pointer;
+        }
+        
+        #start {
+            background-color: rgb(45, 247, 5);
+        }
+        
+        #stop {
+            background-color: red;
+        }
+        
+        #reset {
+            background-color: blue;
+        }
+        
+        .container {
+            text-align: center;
+            margin-top: 100px;
+        }
+        
+        h1 {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+        
+        .input-wrapper {
+            margin-bottom: 20px;
+        }
+        
+        input[type="text"] {
+            padding: 8px;
+            width: 180px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #e6205b;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .timer {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="time">
+            <span class="digit" id="hr">00</span>
+            <span class="txt">Hr</span>
+            <span class="digit" id="min">00</span>
+            <span class="txt">Min</span>
+            <span class="digit" id="sec">00</span>
+            <span class="txt">Sec</span>
+            <span class="digit" id="count">00</span>
+        </div>
+        <div id="btn-container">
+            <button class="btn" id="start" onclick="start()">Start</button>
+            <button class="btn" id="stop" onclick="stop()">Stop</button>
+            <button class="btn" id="reset" onclick="reset()">Reset</button>
+        </div>
+        <div class="container">
+            <h1>Timer</h1>
+            <div class="input-wrapper">
+              <input type="text" id="inputTime" placeholder="Enter time in seconds">
+              <button onclick="startTimer()">Start</button>
+              <button onclick="stopTimer()">Stop</button>
+              <button onclick="resetTimer()">Reset</button>
+            </div>
+            <div class="timer" id="timer">00:00:00</div>
+        </div>
+    </div>
+    <script>
+        var hr = 0;
+        var min = 0;
+        var sec = 0;
+        var count = 0;
+        var timer = false;
+        
+        function start() {
+            timer = true;
+            stopwatch();
+        }
+        
+        function stop() {
+            timer = false;
+        }
+        
+        function reset() {
+            timer = false;
+            hr = 0;
+            min = 0;
+            sec = 0;
+            count = 0;
+        
+            document.getElementById("hr").innerHTML = "00";
+            document.getElementById("min").innerHTML = "00";
+            document.getElementById("sec").innerHTML = "00";
+            document.getElementById("count").innerHTML = "00";
+        }
+        
+        function stopwatch() {
+            if (timer == true) {
+                count = count + 1;
+        
+                if (count == 100) {
+                    sec = sec + 1;
+                    count = 0;
+                }
+        
+                if (sec == 60) {
+                    min = min + 1;
+                    sec = 0;
+                }
+        
+                if (min == 60) {
+                    hr = hr + 1;
+                    min = 0;
+                    sec = 0;
+                }
+        
+                var hrString = hr;
+                var minString = min;
+                var secString = sec;
+                var countString = count;
+        
+                if (hr < 10) {
+                    hrString = "0" + hrString;
+                }
+        
+                if (min < 10) {
+                    minString = "0" + minString;
+                }
+        
+                if (sec < 10) {
+                    secString = "0" + secString;
+                }
+        
+                if (count < 10) {
+                    countString = "0" + countString;
+                }
+        
+                document.getElementById("hr").innerHTML = hrString;
+                document.getElementById("min").innerHTML = minString;
+                document.getElementById("sec").innerHTML = secString;
+                document.getElementById("count").innerHTML = countString;
+        
+                setTimeout("stopwatch()", 10);
+            }
+        }
+        
+        let timerInterval;
+        let timerTime = 0;
+        let inputTime = 0;
+        
+        function startTimer() {
+            clearInterval(timerInterval);
+            inputTime = parseInt(document.getElementById("inputTime").value, 10);
+            if (isNaN(inputTime) || inputTime <= 0) {
+                alert("Please enter a valid time in seconds.");
+                return;
+            }
+            timerTime = inputTime;
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+        
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+        
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerTime = inputTime;
+            updateTimer();
+        }
+        
+        function updateTimer() {
+            if (timerTime <= 0) {
+                clearInterval(timerInterval);
+                alert("Timer finished!");
+                return;
+            }
+            timerTime--;
+            const timerElement = document.getElementById("timer");
+            timerElement.textContent = formatTime(timerTime);
+        }
+        
+        function formatTime(time){
+            const hours = Math.floor(time / 3600).toString().padStart(2, '0');
+            const minutes = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
+            const seconds = (time % 60).toString().padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+    </script>
+</body>
+</html>
+
+
